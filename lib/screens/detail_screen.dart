@@ -51,7 +51,7 @@ class DetailScreen extends ConsumerWidget {
                 Stack(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 25),
+                      padding: const EdgeInsets.only(top: 24),
                       child: Material(
                         borderRadius: BorderRadius.circular(20),
                         child: Padding(
@@ -59,7 +59,7 @@ class DetailScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 25),
+                              const SizedBox(height: 24),
                               Text(
                                 detailMangaModel.title ?? '-',
                                 maxLines: 2,
@@ -69,8 +69,7 @@ class DetailScreen extends ConsumerWidget {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              const SizedBox(height: 8),
-                              const SizedBox(height: 5.0),
+                              const SizedBox(height: 12),
                               Row(
                                 children: [
                                   const Icon(
@@ -78,16 +77,16 @@ class DetailScreen extends ConsumerWidget {
                                     color: Colors.amber,
                                     size: 20,
                                   ),
-                                  const SizedBox(width: 5),
+                                  const SizedBox(width: 4),
                                   Text("${detailMangaModel.rating}/10"),
                                   const Spacer(),
                                   Text(
-                                    detailMangaModel.released ?? '-',
+                                    detailMangaModel.released ?? '',
                                     style: const TextStyle(color: Colors.grey),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 12),
                               Wrap(
                                 children: List.generate(
                                   detailMangaModel.genre?.length ?? 0,
@@ -134,11 +133,20 @@ class DetailScreen extends ConsumerWidget {
                                   },
                                 ),
                               ),
-                              const SizedBox(height: 15),
+                              const SizedBox(height: 12),
                               Text(
                                 detailMangaModel.synopsis ?? '-',
                                 textAlign: TextAlign.justify,
                                 style: const TextStyle(fontSize: 18.0),
+                              ),
+                              SizedBox(height: 12,),
+                              Text(
+                                'Chapters:',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                               ),
                               ...List.generate(
                                 detailMangaModel.chapters?.length ?? 0,
@@ -192,8 +200,8 @@ class DetailScreen extends ConsumerWidget {
             ),
           ),
           Positioned(
-            top: 5,
-            left: 5,
+            top: 8,
+            left: 8,
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,

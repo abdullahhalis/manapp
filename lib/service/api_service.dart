@@ -46,7 +46,7 @@ class ApiService {
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonBody = jsonDecode(response.body);
-      return SearchResponseModel.fromJson(jsonBody['data']);
+      return SearchResponseModel.fromJson(jsonBody);
     } else {
       throw Exception('Failed to load data');
     }

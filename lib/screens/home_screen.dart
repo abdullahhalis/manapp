@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:manapp/constants/app_routes.dart';
+import 'package:manapp/constants/my_app_icons.dart';
 import 'package:manapp/providers/home/home_provider.dart';
 import 'package:manapp/widgets/manga_item.dart';
 
@@ -27,17 +30,6 @@ class _HomeState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
-  final List<String> titleMangaList = [
-    "One Piece",
-    "Naruto",
-    "Attack on Titan",
-    "Demon Slayer",
-    "Jujutsu Kaisen",
-    "Dragon Ball",
-    "Bleach",
-    "Tokyo Revengers",
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,7 +41,7 @@ class _HomeState extends ConsumerState<HomeScreen> {
           SearchAnchor(
             builder: (BuildContext context, SearchController controller) {
               return IconButton(
-                icon: Icon(Icons.search),
+                icon: Icon(MyAppIcons.search),
                 onPressed: () => controller.openView(),
               );
             },
@@ -57,34 +49,58 @@ class _HomeState extends ConsumerState<HomeScreen> {
               BuildContext context,
               SearchController controller,
             ) {
-              final searchResult = ref.watch(
-                searchResultProvider(controller.text.toLowerCase()),
-              );
-              return searchResult.when(
-                data: (searchResult) {
-                  if (searchResult.data.isEmpty) {
-                    return [Center(child: Text("No results found"))];
-                  }
-                  return searchResult.data.map((manga) {
-                    return ListTile(
-                      title: Text(manga.title ?? ''),
-                      onTap: () {
-                        controller.closeView(manga.slug);
-                        context.pushNamed(
-                          AppRoutes.detailName,
-                          pathParameters: {'slug': manga.slug ?? ''},
+              ref
+                  .read(homeProvider.notifier)
+                  .updateSearchQuery(controller.text);
+
+              return [
+                Consumer(
+                  builder: (context, ref, child) {
+                    final searchState = ref.watch(homeProvider);
+                    if (searchState.isLoading) {
+                      return Center(
+                        child: CircularProgressIndicator.adaptive(),
+                      );
+                    }
+                    if (searchState.errorMessage.isNotEmpty) {
+                      return Center(child: Text(searchState.errorMessage));
+                    }
+                    if (searchState.searchResult.isEmpty) {
+                      return Center(child: Text("No results found"));
+                    }
+
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
+                      itemCount: searchState.searchResult.length,
+                      padding: EdgeInsets.all(8),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 8,
+                        crossAxisSpacing: 8,
+                        childAspectRatio: 2 / 3,
+                      ),
+                      itemBuilder: (context, index) {
+                        final manga = searchState.searchResult[index];
+                        return MangaItem(
+                          imageUrl: manga.image ?? '',
+                          title: manga.title ?? '',
+                          type: manga.type,
+                          chapter: manga.chapter,
+                          rating: manga.rating,
+                          slug: manga.slug,
+                          width: (MediaQuery.sizeOf(context).width - 32) / 2,
+                          height:
+                              (MediaQuery.sizeOf(context).width - 32) / 2 * 3,
                         );
                       },
                     );
-                  }).toList();
-                },
-                error: (err, stack) => [Center(child: Text(err.toString()))],
-                loading:
-                    () => [Center(child: CircularProgressIndicator.adaptive())],
-              );
+                  },
+                ),
+              ];
             },
 
-            viewHintText: 'Cari manga...',
+            viewHintText: 'Search manga...',
             // viewBackgroundColor: Colors.lightBlueAccent,
             viewSurfaceTintColor: Colors.lightBlueAccent,
           ),
@@ -155,7 +171,6 @@ class _HomeState extends ConsumerState<HomeScreen> {
                           height: 225,
                           child: ListView.separated(
                             scrollDirection: Axis.horizontal,
-                            // padding: EdgeInsets.symmetric(vertical: 8),
                             itemCount: homeState.newSeries.length,
                             separatorBuilder:
                                 (context, index) => SizedBox(width: 8),

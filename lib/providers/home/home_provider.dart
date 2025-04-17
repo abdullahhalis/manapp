@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:manapp/providers/home/home_state.dart';
 import 'package:manapp/providers/repository_provider.dart';
@@ -8,18 +10,10 @@ final homeProvider = StateNotifierProvider<HomeProvider, HomeState>((ref) {
   return HomeProvider(mangaRepository);
 });
 
-final searchResultProvider = FutureProvider.family.autoDispose((ref, String query) async {
-  final mangaRepository = ref.watch(mangaRepositoryProvider);
-  try {
-    final results = await mangaRepository.fetchSearchManga(query);
-    return results;
-  } catch (e) {
-    throw Exception('Failed to search manga: $e');
-  }
-});
-
 class HomeProvider extends StateNotifier<HomeState>{
   final MangaRepository _mangaRepository;
+  Timer? _debounce;
+  String _lastQuery = '';
   HomeProvider(this._mangaRepository) : super(const HomeState()) {
     fetchHomeData();
   }
@@ -40,5 +34,29 @@ class HomeProvider extends StateNotifier<HomeState>{
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
+  }
+
+  void updateSearchQuery(String query) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 1000), () {
+      if (query != _lastQuery) {
+        _lastQuery = query;
+        _searchManga(query);
+      }
+    });
+  }
+
+  Future<void> _searchManga(String query) async {
+    if (query.isEmpty) {
+      state = state.copyWith(searchResult: []);
+      return;
+    }
+    state = state.copyWith(isLoading: true);
+    try {
+    final results = await _mangaRepository.fetchSearchManga(query);
+    state = state.copyWith(isLoading: false, searchResult: results.data);
+  } catch (e) {
+    state = state.copyWith(isLoading: false, errorMessage: e.toString());
+  }
   }
 }

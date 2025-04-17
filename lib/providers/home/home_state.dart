@@ -8,6 +8,7 @@ class HomeState {
   final List<MangaModel> weeklyPopular;
   final List<MangaModel> monthlyPopular;
   final List<MangaModel> alltimePopular;
+  final List<MangaModel> searchResult;
   final String errorMessage;
 
   const HomeState({
@@ -18,6 +19,7 @@ class HomeState {
     this.weeklyPopular = const [],
     this.monthlyPopular = const [],
     this.alltimePopular = const [],
+    this.searchResult = const [],
     this.errorMessage = '',
   });
   
@@ -29,6 +31,7 @@ class HomeState {
     List<MangaModel>? weeklyPopular,
     List<MangaModel>? monthlyPopular,
     List<MangaModel>? alltimePopular,
+    List<MangaModel>? searchResult,
     String? errorMessage,
   }) {
     return HomeState(
@@ -39,6 +42,7 @@ class HomeState {
       weeklyPopular: weeklyPopular ?? this.weeklyPopular,
       monthlyPopular: monthlyPopular ?? this.monthlyPopular,
       alltimePopular: alltimePopular ?? this.alltimePopular,
+      searchResult: searchResult ?? this.searchResult,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
