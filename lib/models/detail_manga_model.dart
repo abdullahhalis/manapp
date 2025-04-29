@@ -45,7 +45,7 @@ class DetailMangaModel {
       genre: List<String>.from(json['genre'] ?? []),
       chapters:
           (json['chapters'] as List<dynamic>?)
-              ?.map((e) => Chapters.fromJson(e))
+              ?.map((e) => Chapters.fromJson(Map<String, dynamic>.from(e)))
               .toList(),
     );
   }

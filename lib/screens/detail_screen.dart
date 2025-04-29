@@ -6,6 +6,7 @@ import 'package:manapp/constants/my_app_icons.dart';
 import 'package:manapp/models/detail_manga_model.dart';
 import 'package:manapp/providers/detail/detail_provider.dart';
 import 'package:manapp/providers/detail/detail_state.dart';
+import 'package:manapp/providers/favorite/favorite_provider.dart';
 import 'package:manapp/widgets/cached_image_widget.dart';
 
 class DetailScreen extends ConsumerWidget {
@@ -15,6 +16,7 @@ class DetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final detailState = ref.watch(detailNotifierProvider(slug));
+    final detailNotifier = ref.read(detailNotifierProvider(slug).notifier);
     return Scaffold(
       body:
           detailState.isLoading
@@ -24,6 +26,9 @@ class DetailScreen extends ConsumerWidget {
               : detailContent(
                 context: context,
                 detailMangaModel: detailState.detailManga,
+                detailState: detailState,
+                detailNotifier: detailNotifier,
+                ref: ref,
               ),
     );
   }
@@ -31,6 +36,9 @@ class DetailScreen extends ConsumerWidget {
   Widget detailContent({
     required BuildContext context,
     required DetailMangaModel detailMangaModel,
+    required DetailState detailState,
+    required DetailProvider detailNotifier,
+    required WidgetRef ref,
   }) {
     return SafeArea(
       child: Stack(
@@ -104,7 +112,7 @@ class DetailScreen extends ConsumerWidget {
                                           color: Theme.of(context)
                                               .colorScheme
                                               .surface
-                                              .withOpacity(0.2),
+                                              .withValues(alpha: 0.2),
                                           border: Border.all(
                                             color:
                                                 Theme.of(
@@ -139,7 +147,7 @@ class DetailScreen extends ConsumerWidget {
                                 textAlign: TextAlign.justify,
                                 style: const TextStyle(fontSize: 18.0),
                               ),
-                              SizedBox(height: 12,),
+                              SizedBox(height: 12),
                               Text(
                                 'Chapters:',
                                 style: TextStyle(
@@ -182,12 +190,17 @@ class DetailScreen extends ConsumerWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(6.0),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              detailState.isFavorite
+                                  ? detailNotifier.removeFavorite(slug)
+                                  : detailNotifier.addFavorite(slug);
+                              ref.read(favoriteProvider.notifier).fetchFavorites();
+                            },
                             icon: Icon(
-                              true
+                              detailState.isFavorite
                                   ? MyAppIcons.favoriteRounded
                                   : MyAppIcons.favoriteOutlineRounded,
-                              color: true ? Colors.red : null,
+                              color: detailState.isFavorite ? Colors.red : null,
                               size: 20,
                             ),
                           ),

@@ -3,12 +3,19 @@ import 'package:go_router/go_router.dart';
 import 'package:manapp/constants/app_routes.dart';
 import 'package:manapp/screens/chapter_screen.dart';
 import 'package:manapp/screens/detail_screen.dart';
+import 'package:manapp/screens/favorite_screen.dart';
 import 'package:manapp/screens/home_screen.dart';
+import 'package:manapp/screens/splash_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: AppRoutes.home,
+    initialLocation: AppRoutes.splash,
     routes: [
+      GoRoute(
+        name: AppRoutes.splashName,
+        path: AppRoutes.splash,
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(
         name: AppRoutes.homeName,
         path: AppRoutes.home,
@@ -25,7 +32,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           return DetailScreen(slug: slug);
         },
       ),
-      GoRoute(name: AppRoutes.chapterName, path: AppRoutes.chapter, 
+      GoRoute(
+        name: AppRoutes.chapterName,
+        path: AppRoutes.chapter,
         builder: (context, state) {
           final slug = state.pathParameters['slug'];
           if (slug == null || slug.isEmpty) {
@@ -33,6 +42,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           }
           return ChapterScreen(slug: slug);
         },
+      ),
+      GoRoute(
+        name: AppRoutes.favoritesName,
+        path: AppRoutes.favorites,
+        builder: (context, state) => const FavoriteScreen(),
       ),
     ],
   );

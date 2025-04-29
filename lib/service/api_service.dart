@@ -48,7 +48,7 @@ class ApiService {
       final Map<String, dynamic> jsonBody = jsonDecode(response.body);
       return SearchResponseModel.fromJson(jsonBody);
     } else {
-      throw Exception('Failed to load data');
+      throw Exception('Failed to load data: ${response.body}');
     }
   }
 }

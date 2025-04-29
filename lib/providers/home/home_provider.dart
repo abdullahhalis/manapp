@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:manapp/providers/home/home_state.dart';
@@ -10,13 +11,11 @@ final homeProvider = StateNotifierProvider<HomeProvider, HomeState>((ref) {
   return HomeProvider(mangaRepository);
 });
 
-class HomeProvider extends StateNotifier<HomeState>{
+class HomeProvider extends StateNotifier<HomeState> {
   final MangaRepository _mangaRepository;
   Timer? _debounce;
   String _lastQuery = '';
-  HomeProvider(this._mangaRepository) : super(const HomeState()) {
-    fetchHomeData();
-  }
+  HomeProvider(this._mangaRepository) : super(const HomeState());
 
   Future<void> fetchHomeData() async {
     state = state.copyWith(isLoading: true);
@@ -53,10 +52,11 @@ class HomeProvider extends StateNotifier<HomeState>{
     }
     state = state.copyWith(isLoading: true);
     try {
-    final results = await _mangaRepository.fetchSearchManga(query);
-    state = state.copyWith(isLoading: false, searchResult: results.data);
-  } catch (e) {
-    state = state.copyWith(isLoading: false, errorMessage: e.toString());
-  }
+      final results = await _mangaRepository.fetchSearchManga(query);
+      state = state.copyWith(isLoading: false, searchResult: results.data);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, errorMessage: e.toString());
+      log('(SearchManga) error: $e');
+    }
   }
 }

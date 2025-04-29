@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:manapp/providers/app_router_provider.dart';
 import 'package:manapp/screens/detail_screen.dart';
 import 'package:manapp/screens/home_screen.dart';
+import 'package:manapp/service/favorite_service.dart';
 
 void main() async {
   await dotenv.load(fileName: "assets/.env");
+  await Hive.initFlutter();
+  await FavoriteService.instance.init();
+
   runApp(ProviderScope(child: MyApp()));
 }
 
@@ -19,8 +24,6 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: router,
-      // home: HomeScreen()
-      // DetailScreen(slug: 'the-elusive-samurai')
     );
   }
 }

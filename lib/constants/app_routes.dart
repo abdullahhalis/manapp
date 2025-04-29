@@ -10,4 +10,7 @@ class AppRoutes {
 
   static const String chapterName = 'chapter';
   static const String chapter = '/detail/chapter/:slug';
+
+  static const String favoritesName = 'favorite';
+  static const String favorites = '/favorite';
 }

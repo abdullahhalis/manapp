@@ -38,6 +38,10 @@ class _HomeState extends ConsumerState<HomeScreen> {
         backgroundColor: Colors.lightBlueAccent,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: Icon(MyAppIcons.favorite, color: Colors.pinkAccent.shade100,),
+            onPressed: () => context.pushNamed(AppRoutes.favoritesName),
+          ),
           SearchAnchor(
             builder: (BuildContext context, SearchController controller) {
               return IconButton(
