@@ -148,33 +148,52 @@ class DetailScreen extends ConsumerWidget {
                                 style: const TextStyle(fontSize: 18.0),
                               ),
                               SizedBox(height: 12),
-                              Text(
-                                'Chapters:',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                              ...List.generate(
-                                detailMangaModel.chapters?.length ?? 0,
-                                (index) {
-                                  final chapter =
-                                      detailMangaModel.chapters![index];
-                                  return ListTile(
-                                    title: Text('chapter ${chapter.chapter}'),
-                                    subtitle: Text(chapter.date ?? '-'),
-                                    onTap: () {
-                                      context.pushNamed(
-                                        AppRoutes.chapterName,
-                                        pathParameters: {
-                                          'slug': chapter.slug ?? '',
-                                        },
-                                      );
+                              Row(
+                                children: [
+                                  Text(
+                                    'Chapters:',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  ),
+                                  Spacer(),
+                                  IconButton(
+                                    onPressed: () {
+                                      detailNotifier.reverseChapter();
                                     },
-                                  );
-                                },
+                                    icon: Icon(MyAppIcons.sort),
+                                  ),
+                                ],
                               ),
+                              ...List.generate(detailState.chapters.length, (
+                                index,
+                              ) {
+                                final chapter = detailState.chapters[index];
+                                return ListTile(
+                                  title: Text('chapter ${chapter.chapter}'),
+                                  subtitle: Text(chapter.date ?? '-'),
+                                  tileColor:
+                                      detailNotifier.isChapterInHistory(
+                                            chapter.slug ?? '',
+                                          )
+                                          ? Colors.grey.shade400
+                                          : null,
+                                  onTap: () {
+                                    detailNotifier.addChapterToHistory(
+                                      chapter.slug ?? '',
+                                    );
+                                    context.pushNamed(
+                                      AppRoutes.chapterName,
+                                      pathParameters: {
+                                        'slug': chapter.slug ?? '',
+                                      },
+                                    );
+                                  },
+                                );
+                              }),
                             ],
                           ),
                         ),
@@ -194,7 +213,9 @@ class DetailScreen extends ConsumerWidget {
                               detailState.isFavorite
                                   ? detailNotifier.removeFavorite(slug)
                                   : detailNotifier.addFavorite(slug);
-                              ref.read(favoriteProvider.notifier).fetchFavorites();
+                              ref
+                                  .read(favoriteProvider.notifier)
+                                  .fetchFavorites();
                             },
                             icon: Icon(
                               detailState.isFavorite

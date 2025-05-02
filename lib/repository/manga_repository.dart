@@ -4,11 +4,13 @@ import 'package:manapp/models/home_response_model.dart';
 import 'package:manapp/models/search_response_model.dart';
 import 'package:manapp/service/api_service.dart';
 import 'package:manapp/service/favorite_service.dart';
+import 'package:manapp/service/history_service.dart';
 
 class MangaRepository {
   final ApiService _apiService;
   final FavoriteService _favoriteService;
-  const MangaRepository(this._apiService, this._favoriteService);
+  final HistoryService  _historyService;
+  const MangaRepository(this._apiService, this._favoriteService, this._historyService);
 
   Future<HomeResponseModel> fetchHomeData() async {
     return await _apiService.fetchHomeData();
@@ -48,5 +50,17 @@ class MangaRepository {
 
   Future<void> clearFavorites() async {
     await _favoriteService.clearFavorites();
+  }
+
+  Future<void> addChapterToHistory(slug) async {
+    await _historyService.addChapterToHistory(slug);
+  }
+
+  bool isChapterInHistory(slug) {
+    return _historyService.isChapterInHistory(slug);
+  }
+
+  List<String> getChaptersHistory() {
+    return _historyService.getChaptersHistory();
   }
 }

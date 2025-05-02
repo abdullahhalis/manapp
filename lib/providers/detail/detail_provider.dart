@@ -22,7 +22,7 @@ class DetailProvider extends StateNotifier<DetailState> {
     try {
       final detailManga = await _mangaRepository.fetchDetailManga(slug);
       final isFavorite = _mangaRepository.isFavorite(slug);
-      state = state.copyWith(isLoading: false, detailManga: detailManga, isFavorite: isFavorite);
+      state = state.copyWith(isLoading: false, detailManga: detailManga, chapters: detailManga.chapters, isFavorite: isFavorite);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
@@ -36,5 +36,17 @@ class DetailProvider extends StateNotifier<DetailState> {
   Future<void> removeFavorite(String slug) async {
     await _mangaRepository.removeFavorite(slug);
     state = state.copyWith(isFavorite: _mangaRepository.isFavorite(slug));
+  }
+
+  Future<void> addChapterToHistory(String slug) async {
+    await _mangaRepository.addChapterToHistory(slug);
+  }
+
+  bool isChapterInHistory(String slug) {
+    return _mangaRepository.isChapterInHistory(slug);
+  }
+
+  reverseChapter() {
+    state = state.copyWith(chapters: state.chapters.reversed.toList());
   }
 }
