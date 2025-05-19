@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:manapp/models/detail_manga_model.dart';
 import 'package:manapp/providers/detail/detail_state.dart';
 import 'package:manapp/providers/repository_provider.dart';
 import 'package:manapp/repository/manga_repository.dart';
@@ -9,20 +10,29 @@ final detailNotifierProvider =
       slug,
     ) {
       final mangaRepository = ref.watch(mangaRepositoryProvider);
-      return DetailProvider(mangaRepository)..fetchDetailManga(slug);
+      return DetailProvider(mangaRepository, ref)..fetchDetailManga(slug);
     });
+
+final detailMangaProvider = StateProvider<DetailMangaModel?>((ref) => null);
 
 class DetailProvider extends StateNotifier<DetailState> {
   final MangaRepository _mangaRepository;
+  final Ref ref;
 
-  DetailProvider(this._mangaRepository) : super(const DetailState());
+  DetailProvider(this._mangaRepository, this.ref) : super(const DetailState());
 
   Future<void> fetchDetailManga(String slug) async {
     state = state.copyWith(isLoading: true);
     try {
       final detailManga = await _mangaRepository.fetchDetailManga(slug);
       final isFavorite = _mangaRepository.isFavorite(slug);
-      state = state.copyWith(isLoading: false, detailManga: detailManga, chapters: detailManga.chapters, isFavorite: isFavorite);
+      state = state.copyWith(
+        isLoading: false,
+        detailManga: detailManga,
+        chapters: detailManga.chapters,
+        isFavorite: isFavorite,
+      );
+      ref.read(detailMangaProvider.notifier).state = detailManga;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
