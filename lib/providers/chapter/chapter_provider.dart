@@ -54,6 +54,10 @@ class ChapterProvider extends StateNotifier<ChapterState> {
     return null;
   }
 
+  Future<void> addChapterToHistory(String slug) async {
+    await _mangaRepository.addChapterToHistory(slug);
+  }
+
   void toggleMenu() {
     state = state.copyWith(showMenu: !state.showMenu);
   }

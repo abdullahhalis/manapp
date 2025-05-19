@@ -59,6 +59,7 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
       widget.slug,
     );
     final nextSlug = chapterNotifier.getNextChapterSlug(detail, widget.slug);
+    chapterNotifier.addChapterToHistory(widget.slug);
     return GestureDetector(
       onTap: () {
         chapterNotifier.toggleMenu();

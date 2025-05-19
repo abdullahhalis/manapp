@@ -182,9 +182,6 @@ class DetailScreen extends ConsumerWidget {
                                           ? Colors.grey.shade400
                                           : null,
                                   onTap: () {
-                                    detailNotifier.addChapterToHistory(
-                                      chapter.slug ?? '',
-                                    );
                                     context.pushNamed(
                                       AppRoutes.chapterName,
                                       pathParameters: {
