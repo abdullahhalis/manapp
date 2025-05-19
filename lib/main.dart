@@ -3,8 +3,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:manapp/providers/app_router_provider.dart';
-import 'package:manapp/screens/detail_screen.dart';
-import 'package:manapp/screens/home_screen.dart';
 import 'package:manapp/service/favorite_service.dart';
 import 'package:manapp/service/history_service.dart';
 

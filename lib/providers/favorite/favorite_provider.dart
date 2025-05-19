@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:manapp/providers/favorite/favorite_state.dart';
 import 'package:manapp/providers/repository_provider.dart';
@@ -21,7 +19,6 @@ class FavoriteProvider extends StateNotifier<FavoriteState> {
     try {
       final favorites = _mangaRepository.getAllFavorites();
       state = state.copyWith(isLoading: false, favorites: favorites);
-      log('(FavoriteProvider) fetchFavorites: ${state.favorites}');
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }

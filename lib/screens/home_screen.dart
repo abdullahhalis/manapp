@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,7 +19,6 @@ class _HomeState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // _scrollController.addListener(_onscroll);
   }
 
   @override
@@ -105,7 +102,6 @@ class _HomeState extends ConsumerState<HomeScreen> {
             },
 
             viewHintText: 'Search manga...',
-            // viewBackgroundColor: Colors.lightBlueAccent,
             viewSurfaceTintColor: Colors.lightBlueAccent,
           ),
         ],
@@ -143,7 +139,6 @@ class _HomeState extends ConsumerState<HomeScreen> {
                         height: 225,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          // padding: EdgeInsets.symmetric(vertical: 8),
                           itemCount: homeState.popularToday.length,
                           separatorBuilder:
                               (context, index) => SizedBox(width: 8),

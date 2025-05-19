@@ -48,10 +48,6 @@ class DetailProvider extends StateNotifier<DetailState> {
     state = state.copyWith(isFavorite: _mangaRepository.isFavorite(slug));
   }
 
-  Future<void> addChapterToHistory(String slug) async {
-    await _mangaRepository.addChapterToHistory(slug);
-  }
-
   bool isChapterInHistory(String slug) {
     return _mangaRepository.isChapterInHistory(slug);
   }

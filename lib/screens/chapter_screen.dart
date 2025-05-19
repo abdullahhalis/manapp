@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:manapp/constants/app_routes.dart';
 import 'package:manapp/constants/my_app_icons.dart';
 import 'package:manapp/providers/chapter/chapter_provider.dart';
-import 'package:manapp/providers/chapter/chapter_state.dart';
 import 'package:manapp/providers/detail/detail_provider.dart';
 import 'package:manapp/widgets/cached_image_widget.dart';
 
