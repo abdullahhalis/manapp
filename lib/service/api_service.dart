@@ -8,8 +8,8 @@ import 'package:manapp/models/home_response_model.dart';
 import 'package:manapp/models/search_response_model.dart';
 
 class ApiService {
-  Future<HomeResponseModel> fetchHomeData() async {
-    final url = Uri.parse(ApiConstants.homePath);
+  Future<HomeResponseModel> fetchHomeData({int page = 1}) async {
+    final url = Uri.parse("${ApiConstants.homePath}?page=$page");
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonBody = jsonDecode(response.body);
@@ -41,8 +41,8 @@ class ApiService {
     }
   }
 
-  Future<SearchResponseModel> fetchSearchManga(String query) async {
-    final url = Uri.parse('${ApiConstants.searchPath}?s=$query');
+  Future<SearchResponseModel> fetchSearchManga(String query, {int page = 1}) async {
+    final url = Uri.parse('${ApiConstants.searchPath}?s=$query&page=$page');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonBody = jsonDecode(response.body);

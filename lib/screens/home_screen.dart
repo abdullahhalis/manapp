@@ -19,12 +19,22 @@ class _HomeState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    final homeState = ref.read(homeProvider);
+    if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent &&
+        !homeState.isLoading) {
+      ref.read(homeProvider.notifier).fetchHomeData();
+    }
   }
 
   @override
@@ -36,7 +46,7 @@ class _HomeState extends ConsumerState<HomeScreen> {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: Icon(MyAppIcons.favorite, color: Colors.pinkAccent.shade100,),
+            icon: Icon(MyAppIcons.favorite, color: Colors.pinkAccent.shade100),
             onPressed: () => context.pushNamed(AppRoutes.favoritesName),
           ),
           SearchAnchor(
@@ -58,43 +68,63 @@ class _HomeState extends ConsumerState<HomeScreen> {
                 Consumer(
                   builder: (context, ref, child) {
                     final searchState = ref.watch(homeProvider);
-                    if (searchState.isLoading) {
+                    if (searchState.isSearching) {
                       return Center(
                         child: CircularProgressIndicator.adaptive(),
                       );
                     }
-                    if (searchState.errorMessage.isNotEmpty) {
+                    if (searchState.searchErrorMessage.isNotEmpty) {
                       return Center(child: Text(searchState.errorMessage));
                     }
                     if (searchState.searchResult.isEmpty) {
                       return Center(child: Text("No results found"));
                     }
 
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: BouncingScrollPhysics(),
-                      itemCount: searchState.searchResult.length,
-                      padding: EdgeInsets.all(8),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 8,
-                        crossAxisSpacing: 8,
-                        childAspectRatio: 2 / 3,
-                      ),
-                      itemBuilder: (context, index) {
-                        final manga = searchState.searchResult[index];
-                        return MangaItem(
-                          imageUrl: manga.image ?? '',
-                          title: manga.title ?? '',
-                          type: manga.type,
-                          chapter: manga.chapter,
-                          rating: manga.rating,
-                          slug: manga.slug,
-                          width: (MediaQuery.sizeOf(context).width - 32) / 2,
-                          height:
-                              (MediaQuery.sizeOf(context).width - 32) / 2 * 3,
-                        );
+                    return NotificationListener<ScrollNotification>(
+                      onNotification: (ScrollNotification scrollInfo) {
+                        if (scrollInfo.metrics.pixels ==
+                                scrollInfo.metrics.maxScrollExtent &&
+                            !searchState.isSearchingMore && searchState.hasMoreSearchResults) {
+                          ref
+                              .read(homeProvider.notifier)
+                              .fetchMoreSearchResults();
+                          return true;
+                        }
+                        return false;
                       },
+                      child: SizedBox(
+                        height: MediaQuery.sizeOf(context).height,
+                        child: GridView.builder(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          itemCount: searchState.searchResult.length + (searchState.isSearchingMore ? 1: 0),
+                          padding: EdgeInsets.all(8),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 8,
+                            crossAxisSpacing: 8,
+                            childAspectRatio: 2 / 3,
+                          ),
+                          itemBuilder: (context, index) {
+                            if (index == searchState.searchResult.length && searchState.isSearchingMore) {
+                              return Center(
+                                child: CircularProgressIndicator.adaptive(),
+                              );
+                            }
+                            final manga = searchState.searchResult[index];
+                            return MangaItem(
+                              imageUrl: manga.image ?? '',
+                              title: manga.title ?? '',
+                              type: manga.type,
+                              chapter: manga.chapter,
+                              rating: manga.rating,
+                              slug: manga.slug,
+                              width: (MediaQuery.sizeOf(context).width - 32) / 2,
+                              height:
+                                  (MediaQuery.sizeOf(context).width - 32) / 2 * 3,
+                            );
+                          },
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -110,7 +140,7 @@ class _HomeState extends ConsumerState<HomeScreen> {
         builder: (context, ref, child) {
           final homeState = ref.watch(homeProvider);
 
-          if (homeState.isLoading) {
+          if (homeState.isLoading && homeState.latestUpdate.isEmpty) {
             return Center(child: CircularProgressIndicator.adaptive());
           }
           if (homeState.errorMessage.isNotEmpty) {
@@ -125,36 +155,38 @@ class _HomeState extends ConsumerState<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          "Popular Today",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                      if (homeState.popularToday.isNotEmpty) ...[
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            "Popular Today",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 225,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: homeState.popularToday.length,
-                          separatorBuilder:
-                              (context, index) => SizedBox(width: 8),
-                          itemBuilder: (context, index) {
-                            final manga = homeState.popularToday[index];
-                            return MangaItem(
-                              imageUrl: manga.image ?? '',
-                              title: manga.title ?? '',
-                              type: manga.type,
-                              chapter: manga.chapter,
-                              rating: manga.rating,
-                              slug: manga.slug,
-                            );
-                          },
+                        SizedBox(
+                          height: 225,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: homeState.popularToday.length,
+                            separatorBuilder:
+                                (context, index) => SizedBox(width: 8),
+                            itemBuilder: (context, index) {
+                              final manga = homeState.popularToday[index];
+                              return MangaItem(
+                                imageUrl: manga.image ?? '',
+                                title: manga.title ?? '',
+                                type: manga.type,
+                                chapter: manga.chapter,
+                                rating: manga.rating,
+                                slug: manga.slug,
+                              );
+                            },
+                          ),
                         ),
-                      ),
+                      ],
                       if (homeState.newSeries.isNotEmpty) ...[
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 8),
@@ -228,6 +260,12 @@ class _HomeState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ),
+              if (homeState.isLoading && homeState.latestUpdate.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: Center(
+                    child: CircularProgressIndicator.adaptive(),
+                  ),
+                ),
             ],
           );
         },

@@ -12,8 +12,8 @@ class MangaRepository {
   final HistoryService  _historyService;
   const MangaRepository(this._apiService, this._favoriteService, this._historyService);
 
-  Future<HomeResponseModel> fetchHomeData() async {
-    return await _apiService.fetchHomeData();
+  Future<HomeResponseModel> fetchHomeData({int page = 1}) async {
+    return await _apiService.fetchHomeData(page: page);
   }
 
   Future<DetailMangaModel> fetchDetailManga(String slug) async {
@@ -24,8 +24,8 @@ class MangaRepository {
     return await _apiService.fetchChapterManga(slug);
   }
 
-  Future<SearchResponseModel> fetchSearchManga(String query) async {
-    return await _apiService.fetchSearchManga(query);
+  Future<SearchResponseModel> fetchSearchManga(String query, {int page = 1}) async {
+    return await _apiService.fetchSearchManga(query, page: page);
   }
 
   Future<void> addFavorite(String slug, DetailMangaModel detailManga) async {
