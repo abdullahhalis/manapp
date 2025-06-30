@@ -8,6 +8,7 @@ import 'package:manapp/constants/my_app_icons.dart';
 import 'package:manapp/providers/chapter/chapter_provider.dart';
 import 'package:manapp/providers/detail/detail_provider.dart';
 import 'package:manapp/widgets/cached_image_widget.dart';
+import 'package:manapp/widgets/zoomable_image_widget.dart';
 
 class ChapterScreen extends ConsumerStatefulWidget {
   final String slug;
@@ -78,15 +79,12 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
                       SingleChildScrollView(
                         controller: _scrollController,
                         child: Column(
-                          children: List.generate(
-                            chapterState.chapter.images?.length ?? 0,
-                            (index) {
-                              return CachedImageWidget(
-                                imgUrl: chapterState.chapter.images![index],
-                                imgWidth: double.infinity,
-                              );
-                            },
-                          ),
+                          children:
+                              chapterState.chapter.images!
+                                  .map(
+                                    (url) => ZoomableImageWidget(imageWidget: CachedImageWidget(imgUrl: url, imgWidth: double.infinity))
+                                  )
+                                  .toList(),
                         ),
                       ),
                       Positioned(
