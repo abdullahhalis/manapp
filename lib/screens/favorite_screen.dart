@@ -16,9 +16,32 @@ class FavoriteScreen extends ConsumerWidget {
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(MyAppIcons.delete, color: Colors.red,),
+            icon: const Icon(MyAppIcons.delete, color: Colors.red),
             onPressed: () {
-              ref.read(favoriteProvider.notifier).clearFavorites();
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text("Clear Favorites"),
+                    content: const Text(
+                      "Are you sure you want to clear all favorites?",
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text("Cancel"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          ref.read(favoriteProvider.notifier).clearFavorites();
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text("Clear"),
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         ],
