@@ -11,4 +11,5 @@ class MyAppIcons {
   static const IconData arrowBack = Icons.arrow_back;
   static const IconData search = Icons.search;
   static const IconData sort = Icons.import_export;
+  static const IconData refresh = Icons.refresh;
 }
