@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:manapp/constants/app_routes.dart';
@@ -40,7 +41,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           if (slug == null || slug.isEmpty) {
             return const HomeScreen();
           }
-          return ChapterScreen(slug: slug);
+          return ChapterScreen(key: Key(slug), slug: slug);
         },
       ),
       GoRoute(

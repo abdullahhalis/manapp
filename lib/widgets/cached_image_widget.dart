@@ -22,6 +22,7 @@ class CachedImageWidget extends StatelessWidget {
       width: imgWidth,  
       imageUrl: imgUrl, 
       fit: boxFit ?? BoxFit.cover,
+      memCacheWidth: MediaQuery.of(context).size.width.toInt(),
       placeholder:
           (context, url) =>
               Center(child: const CircularProgressIndicator.adaptive()),

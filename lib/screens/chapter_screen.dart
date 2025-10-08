@@ -25,8 +25,8 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       ref
           .read(chapterProvider(widget.slug).notifier)
           .addChapterToHistory(widget.slug);
@@ -105,13 +105,16 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
             ListView.builder(
               controller: _scrollController,
               itemCount: chapterState.chapter.images?.length ?? 0,
-              cacheExtent: 2 * MediaQuery.of(context).size.height,
+              cacheExtent: 4 * MediaQuery.of(context).size.height,
               itemBuilder: (context, index) {
                 final url = chapterState.chapter.images![index];
-                return ZoomableImageWidget(
-                  imageWidget: CachedImageWidget(
-                    imgUrl: url,
-                    imgWidth: double.infinity,
+                return KeyedSubtree(
+                  key: ValueKey(url),
+                  child: ZoomableImageWidget(
+                    imageWidget: CachedImageWidget(
+                      imgUrl: url,
+                      imgWidth: double.infinity,
+                    ),
                   ),
                 );
               },
