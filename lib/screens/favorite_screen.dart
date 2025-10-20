@@ -75,8 +75,8 @@ class FavoriteScreen extends ConsumerWidget {
                     chapter: detailManga.chapters?.length.toString(),
                     rating: detailManga.rating,
                     slug: manga.keys.first,
-                    width: (MediaQuery.sizeOf(context).width - 32) / 2,
-                    height: (MediaQuery.sizeOf(context).width - 32) / 2 * 3,
+                    width: (MediaQuery.sizeOf(context).width) / 2,
+                    height: (MediaQuery.sizeOf(context).width) / 2 * 3,
                   );
                 },
               );

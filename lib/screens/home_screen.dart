@@ -247,8 +247,8 @@ class _HomeState extends ConsumerState<HomeScreen> {
                         chapter: manga.chapter,
                         rating: manga.rating,
                         slug: manga.slug,
-                        width: (MediaQuery.sizeOf(context).width - 32) / 2,
-                        height: (MediaQuery.sizeOf(context).width - 32) / 2 * 3,
+                        width: (MediaQuery.sizeOf(context).width) / 2,
+                        height: (MediaQuery.sizeOf(context).width) / 2 * 3,
                       );
                     },
                   ),
