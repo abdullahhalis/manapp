@@ -47,10 +47,13 @@ class MangaItem extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: CachedImageWidget(
-                      imgUrl: imageUrl,
-                      imgWidth: width ?? 150,
-                      imgHeight: height ?? 225,
+                    child: Hero(
+                      tag: 'cover_image_${slug ?? title}',
+                      child: CachedImageWidget(
+                        imgUrl: imageUrl,
+                        imgWidth: width ?? 150,
+                        imgHeight: height ?? 225,
+                      ),
                     ),
                   ),
                   if (type != null)

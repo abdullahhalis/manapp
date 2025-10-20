@@ -96,6 +96,7 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
       widget.slug,
     );
     final nextSlug = chapterNotifier.getNextChapterSlug(detail, widget.slug);
+    final pages = chapterState.chapter.images?.length ?? 0;
 
     return GestureDetector(
       onTap: chapterNotifier.toggleMenu,
@@ -104,8 +105,8 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
           children: [
             ListView.builder(
               controller: _scrollController,
-              itemCount: chapterState.chapter.images?.length ?? 0,
-              cacheExtent: 4 * MediaQuery.of(context).size.height,
+              itemCount: pages,
+              cacheExtent: pages / 2 * MediaQuery.of(context).size.height,
               itemBuilder: (context, index) {
                 final url = chapterState.chapter.images![index];
                 return KeyedSubtree(
