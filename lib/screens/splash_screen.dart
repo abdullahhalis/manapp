@@ -35,7 +35,17 @@ class SplashScreen extends ConsumerWidget {
           );
         },
         loading:
-            () => const Center(child: CircularProgressIndicator.adaptive()),
+            () => Center(
+              child: AnimatedOpacity(
+                opacity: 1,
+                duration: const Duration(milliseconds: 500),
+                child: Image.asset(
+                  'assets/icon/logo.png',
+                  width: 150,
+                  height: 150,
+                ),
+              ),
+            ),
       ),
     );
   }
