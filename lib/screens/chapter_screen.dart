@@ -8,7 +8,6 @@ import 'package:manapp/constants/my_app_icons.dart';
 import 'package:manapp/providers/chapter/chapter_provider.dart';
 import 'package:manapp/providers/detail/detail_provider.dart';
 import 'package:manapp/widgets/cached_image_widget.dart';
-import 'package:manapp/widgets/zoomable_image_widget.dart';
 
 class ChapterScreen extends ConsumerStatefulWidget {
   final String slug;
@@ -20,6 +19,7 @@ class ChapterScreen extends ConsumerStatefulWidget {
 
 class _ChapterScreenState extends ConsumerState<ChapterScreen> {
   final ScrollController _scrollController = ScrollController();
+  final TransformationController _zoomController = TransformationController();
 
   @override
   void initState() {
@@ -37,6 +37,7 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
+    _zoomController.dispose();
     if (mounted) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     }
@@ -100,25 +101,28 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
 
     return GestureDetector(
       onTap: chapterNotifier.toggleMenu,
+      onDoubleTap: () {
+        _zoomController.value = Matrix4.identity();
+      },
       child: Scaffold(
         body: Stack(
           children: [
-            ListView.builder(
-              controller: _scrollController,
-              itemCount: pages,
-              cacheExtent: pages / 2 * MediaQuery.of(context).size.height,
-              itemBuilder: (context, index) {
-                final url = chapterState.chapter.images![index];
-                return KeyedSubtree(
-                  key: ValueKey(url),
-                  child: ZoomableImageWidget(
-                    imageWidget: CachedImageWidget(
-                      imgUrl: url,
-                      imgWidth: double.infinity,
-                    ),
-                  ),
-                );
-              },
+            InteractiveViewer(
+              transformationController: _zoomController,
+              minScale: 1.0,
+              maxScale: 4.0,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: Column(
+                  children: List.generate(pages, (index) {
+                    final imgUrl = chapterState.chapter.images![index];
+                    return CachedImageWidget(
+                      imgUrl: imgUrl,
+                      boxFit: BoxFit.contain,
+                    );
+                  }),
+                ),
+              ),
             ),
             Positioned(
               top: 16,

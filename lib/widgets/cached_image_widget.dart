@@ -17,29 +17,25 @@ class CachedImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return CachedNetworkImage(
-          height: imgHeight,
-          width: imgWidth,  
-          imageUrl: imgUrl, 
-          fit: boxFit ?? BoxFit.cover,
-          memCacheWidth: (constraints.maxWidth * 2).toInt(),
-          placeholder:
-              (context, url) =>
-                  Center(child: const CircularProgressIndicator.adaptive()),
-          errorWidget: (context, url, error) {
-            return Center(
-              child: Column(
-                children: [
-                  const Icon(MyAppIcons.error, color: Colors.red),
-                  Text(error.toString()),
-                ],
-              ),
-            );
-          },
+    return CachedNetworkImage(
+      height: imgHeight,
+      width: imgWidth,
+      imageUrl: imgUrl,
+      fit: boxFit ?? BoxFit.cover,      
+      placeholder:
+          (context, url) => Center(
+            child: const CircularProgressIndicator.adaptive(),
+          ),
+      errorWidget: (context, url, error) {
+        return Center(
+          child: Column(
+            children: [
+              const Icon(MyAppIcons.error, color: Colors.red),
+              Text(error.toString()),
+            ],
+          ),
         );
-      }
+      },
     );
   }
 }
