@@ -7,6 +7,8 @@ import 'package:manapp/providers/detail/detail_provider.dart';
 import 'package:manapp/providers/detail/detail_state.dart';
 import 'package:manapp/providers/favorite/favorite_provider.dart';
 import 'package:manapp/widgets/cached_image_widget.dart';
+import 'package:manapp/widgets/my_error_widget.dart';
+import 'package:manapp/widgets/my_loading_widget.dart';
 
 class DetailScreen extends ConsumerWidget {
   final String slug;
@@ -17,23 +19,14 @@ class DetailScreen extends ConsumerWidget {
     final detailState = ref.watch(detailNotifierProvider(slug));
 
     if (detailState.isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(body: MyLoadingWidget());
     }
 
     if (detailState.errorMessage.isNotEmpty) {
       return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(detailState.errorMessage),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () => ref.refresh(detailNotifierProvider(slug)),
-                child: const Text('Retry'),
-              ),
-            ],
-          ),
+        body: MyErrorWidget(
+          errorText: detailState.errorMessage,
+          retryFunction: () => ref.refresh(detailNotifierProvider(slug)),
         ),
       );
     }

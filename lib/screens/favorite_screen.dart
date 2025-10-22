@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:manapp/constants/my_app_icons.dart';
 import 'package:manapp/providers/favorite/favorite_provider.dart';
 import 'package:manapp/widgets/manga_item.dart';
+import 'package:manapp/widgets/my_loading_widget.dart';
 
 class FavoriteScreen extends ConsumerWidget {
   const FavoriteScreen({super.key});
@@ -50,7 +51,7 @@ class FavoriteScreen extends ConsumerWidget {
         builder: (context, ref, child) {
           final favoritestate = ref.watch(favoriteProvider);
           return favoritestate.isLoading
-              ? const Center(child: CircularProgressIndicator.adaptive())
+              ? const MyLoadingWidget()
               : favoritestate.favorites.isEmpty
               ? const Center(child: Text("No favorites"))
               : GridView.builder(

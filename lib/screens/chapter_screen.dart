@@ -8,6 +8,8 @@ import 'package:manapp/constants/my_app_icons.dart';
 import 'package:manapp/providers/chapter/chapter_provider.dart';
 import 'package:manapp/providers/detail/detail_provider.dart';
 import 'package:manapp/widgets/cached_image_widget.dart';
+import 'package:manapp/widgets/my_error_widget.dart';
+import 'package:manapp/widgets/my_loading_widget.dart';
 
 class ChapterScreen extends ConsumerStatefulWidget {
   final String slug;
@@ -63,31 +65,15 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
 
     if (chapterState.isLoading) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator.adaptive()),
+        body: MyLoadingWidget(),
       );
     }
 
     if (chapterState.errorMessage.isNotEmpty) {
       return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                chapterState.errorMessage,
-                style: const TextStyle(color: Colors.red),
-              ),
-              ElevatedButton.icon(
-                onPressed: () => ref.refresh(chapterProvider(widget.slug)),
-                icon: const Icon(MyAppIcons.refresh),
-                label: const Text('Retry'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-            ],
-          ),
+        body: MyErrorWidget(
+          errorText: chapterState.errorMessage,
+          retryFunction: () => ref.refresh(chapterProvider(widget.slug)),
         ),
       );
     }

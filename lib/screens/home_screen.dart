@@ -5,6 +5,8 @@ import 'package:manapp/constants/app_routes.dart';
 import 'package:manapp/constants/my_app_icons.dart';
 import 'package:manapp/providers/home/home_provider.dart';
 import 'package:manapp/widgets/manga_item.dart';
+import 'package:manapp/widgets/my_error_widget.dart';
+import 'package:manapp/widgets/my_loading_widget.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -84,7 +86,8 @@ class _HomeState extends ConsumerState<HomeScreen> {
                       onNotification: (ScrollNotification scrollInfo) {
                         if (scrollInfo.metrics.pixels ==
                                 scrollInfo.metrics.maxScrollExtent &&
-                            !searchState.isSearchingMore && searchState.hasMoreSearchResults) {
+                            !searchState.isSearchingMore &&
+                            searchState.hasMoreSearchResults) {
                           ref
                               .read(homeProvider.notifier)
                               .fetchMoreSearchResults();
@@ -96,16 +99,20 @@ class _HomeState extends ConsumerState<HomeScreen> {
                         height: MediaQuery.sizeOf(context).height,
                         child: GridView.builder(
                           physics: AlwaysScrollableScrollPhysics(),
-                          itemCount: searchState.searchResult.length + (searchState.isSearchingMore ? 1: 0),
+                          itemCount:
+                              searchState.searchResult.length +
+                              (searchState.isSearchingMore ? 1 : 0),
                           padding: EdgeInsets.all(8),
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: 8,
-                            crossAxisSpacing: 8,
-                            childAspectRatio: 2 / 3,
-                          ),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 8,
+                                crossAxisSpacing: 8,
+                                childAspectRatio: 2 / 3,
+                              ),
                           itemBuilder: (context, index) {
-                            if (index == searchState.searchResult.length && searchState.isSearchingMore) {
+                            if (index == searchState.searchResult.length &&
+                                searchState.isSearchingMore) {
                               return Center(
                                 child: CircularProgressIndicator.adaptive(),
                               );
@@ -118,9 +125,12 @@ class _HomeState extends ConsumerState<HomeScreen> {
                               chapter: manga.chapter,
                               rating: manga.rating,
                               slug: manga.slug,
-                              width: (MediaQuery.sizeOf(context).width - 32) / 2,
+                              width:
+                                  (MediaQuery.sizeOf(context).width - 32) / 2,
                               height:
-                                  (MediaQuery.sizeOf(context).width - 32) / 2 * 3,
+                                  (MediaQuery.sizeOf(context).width - 32) /
+                                  2 *
+                                  3,
                             );
                           },
                         ),
@@ -141,10 +151,13 @@ class _HomeState extends ConsumerState<HomeScreen> {
           final homeState = ref.watch(homeProvider);
 
           if (homeState.isLoading && homeState.latestUpdate.isEmpty) {
-            return Center(child: CircularProgressIndicator.adaptive());
+            return const MyLoadingWidget();
           }
           if (homeState.errorMessage.isNotEmpty) {
-            return Center(child: Text(homeState.errorMessage));
+            return MyErrorWidget(
+              errorText: homeState.errorMessage,
+              retryFunction: () => ref.refresh(homeProvider),
+            );
           }
           return CustomScrollView(
             controller: _scrollController,
@@ -262,9 +275,7 @@ class _HomeState extends ConsumerState<HomeScreen> {
               ),
               if (homeState.isLoading && homeState.latestUpdate.isNotEmpty)
                 SliverToBoxAdapter(
-                  child: Center(
-                    child: CircularProgressIndicator.adaptive(),
-                  ),
+                  child: Center(child: CircularProgressIndicator.adaptive()),
                 ),
             ],
           );
