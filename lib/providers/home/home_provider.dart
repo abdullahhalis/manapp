@@ -17,18 +17,25 @@ class HomeProvider extends StateNotifier<HomeState> {
   String _lastQuery = '';
   HomeProvider(this._mangaRepository) : super(const HomeState());
 
-  Future<void> fetchHomeData() async {
+  Future<void> fetchHomeData({bool refresh = false}) async {
     if (state.isLoading) return;
-    state = state.copyWith(isLoading: true);
-    try {
-      final homeData = await _mangaRepository.fetchHomeData(
-        page: state.currentPage,
+    state = state.copyWith(isLoading: true, errorMessage: '');
+    if (refresh) {
+      state = state.copyWith(
+        currentPage: 1,
+        latestUpdate: [],
       );
+    }
+    try {
+      final homeData = await _mangaRepository.fetchHomeData(page: state.currentPage);
       state = state.copyWith(
         currentPage: state.currentPage + 1,
         isLoading: false,
         popularToday: homeData.popularToday,
-        latestUpdate: [...state.latestUpdate, ...homeData.latestUpdate],
+        latestUpdate:
+            refresh
+                ? homeData.latestUpdate
+                : [...state.latestUpdate, ...homeData.latestUpdate],
         newSeries: homeData.newSeries,
         weeklyPopular: homeData.weeklyPopular,
         monthlyPopular: homeData.monthlyPopular,

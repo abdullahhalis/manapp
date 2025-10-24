@@ -156,128 +156,134 @@ class _HomeState extends ConsumerState<HomeScreen> {
           if (homeState.errorMessage.isNotEmpty) {
             return MyErrorWidget(
               errorText: homeState.errorMessage,
-              retryFunction: () => ref.refresh(homeProvider),
+              retryFunction: () => ref.read(homeProvider.notifier).fetchHomeData(refresh: true),
             );
           }
-          return CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (homeState.popularToday.isNotEmpty) ...[
-                        Padding(
-                          padding: EdgeInsets.only(bottom: 8),
-                          child: Text(
-                            "Popular Today",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 225,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: homeState.popularToday.length,
-                            separatorBuilder:
-                                (context, index) => SizedBox(width: 8),
-                            itemBuilder: (context, index) {
-                              final manga = homeState.popularToday[index];
-                              return MangaItem(
-                                imageUrl: manga.image ?? '',
-                                title: manga.title ?? '',
-                                type: manga.type,
-                                chapter: manga.chapter,
-                                rating: manga.rating,
-                                slug: manga.slug,
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                      if (homeState.newSeries.isNotEmpty) ...[
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            "New Series",
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 225,
-                          child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: homeState.newSeries.length,
-                            separatorBuilder:
-                                (context, index) => SizedBox(width: 8),
-                            itemBuilder: (context, index) {
-                              final manga = homeState.newSeries[index];
-                              return MangaItem(
-                                imageUrl: manga.image ?? '',
-                                title: manga.title ?? '',
-                                type: manga.type,
-                                chapter: manga.chapter,
-                                rating: manga.rating,
-                                slug: manga.slug,
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                      Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Text(
-                          "Latest Update",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SliverPadding(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                sliver: SliverGrid(
-                  delegate: SliverChildBuilderDelegate(
-                    childCount: homeState.latestUpdate.length,
-                    (context, index) {
-                      final manga = homeState.latestUpdate[index];
-                      return MangaItem(
-                        imageUrl: manga.image ?? '',
-                        title: manga.title ?? '',
-                        type: manga.type,
-                        chapter: manga.chapter,
-                        rating: manga.rating,
-                        slug: manga.slug,
-                        width: (MediaQuery.sizeOf(context).width) / 2,
-                        height: (MediaQuery.sizeOf(context).width) / 2 * 3,
-                      );
-                    },
-                  ),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                    childAspectRatio: 2 / 3,
-                  ),
-                ),
-              ),
-              if (homeState.isLoading && homeState.latestUpdate.isNotEmpty)
+          return RefreshIndicator(
+            onRefresh: () async {
+              await ref.read(homeProvider.notifier).fetchHomeData(refresh: true);
+            },
+            child: CustomScrollView(
+              controller: _scrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
                 SliverToBoxAdapter(
-                  child: Center(child: CircularProgressIndicator.adaptive()),
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (homeState.popularToday.isNotEmpty) ...[
+                          Padding(
+                            padding: EdgeInsets.only(bottom: 8),
+                            child: Text(
+                              "Popular Today",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 225,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: homeState.popularToday.length,
+                              separatorBuilder:
+                                  (context, index) => SizedBox(width: 8),
+                              itemBuilder: (context, index) {
+                                final manga = homeState.popularToday[index];
+                                return MangaItem(
+                                  imageUrl: manga.image ?? '',
+                                  title: manga.title ?? '',
+                                  type: manga.type,
+                                  chapter: manga.chapter,
+                                  rating: manga.rating,
+                                  slug: manga.slug,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                        if (homeState.newSeries.isNotEmpty) ...[
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8),
+                            child: Text(
+                              "New Series",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 225,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: homeState.newSeries.length,
+                              separatorBuilder:
+                                  (context, index) => SizedBox(width: 8),
+                              itemBuilder: (context, index) {
+                                final manga = homeState.newSeries[index];
+                                return MangaItem(
+                                  imageUrl: manga.image ?? '',
+                                  title: manga.title ?? '',
+                                  type: manga.type,
+                                  chapter: manga.chapter,
+                                  rating: manga.rating,
+                                  slug: manga.slug,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                        Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Text(
+                            "Latest Update",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-            ],
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  sliver: SliverGrid(
+                    delegate: SliverChildBuilderDelegate(
+                      childCount: homeState.latestUpdate.length,
+                      (context, index) {
+                        final manga = homeState.latestUpdate[index];
+                        return MangaItem(
+                          imageUrl: manga.image ?? '',
+                          title: manga.title ?? '',
+                          type: manga.type,
+                          chapter: manga.chapter,
+                          rating: manga.rating,
+                          slug: manga.slug,
+                          width: (MediaQuery.sizeOf(context).width) / 2,
+                          height: (MediaQuery.sizeOf(context).width) / 2 * 3,
+                        );
+                      },
+                    ),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 2 / 3,
+                    ),
+                  ),
+                ),
+                if (homeState.isLoading && homeState.latestUpdate.isNotEmpty)
+                  SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator.adaptive()),
+                  ),
+              ],
+            ),
           );
         },
       ),
