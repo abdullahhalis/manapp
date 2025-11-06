@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:manapp/constants/app_routes.dart';
 import 'package:manapp/constants/my_app_icons.dart';
 import 'package:manapp/providers/chapter/chapter_provider.dart';
-import 'package:manapp/providers/detail/detail_provider.dart';
 import 'package:manapp/widgets/cached_image_widget.dart';
 import 'package:manapp/widgets/my_error_widget.dart';
 import 'package:manapp/widgets/my_loading_widget.dart';
@@ -61,12 +60,9 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
   Widget build(BuildContext context) {
     final chapterState = ref.watch(chapterProvider(widget.slug));
     final chapterNotifier = ref.read(chapterProvider(widget.slug).notifier);
-    final detail = ref.watch(detailMangaProvider);
 
     if (chapterState.isLoading) {
-      return const Scaffold(
-        body: MyLoadingWidget(),
-      );
+      return const Scaffold(body: MyLoadingWidget());
     }
 
     if (chapterState.errorMessage.isNotEmpty) {
@@ -78,11 +74,8 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
       );
     }
 
-    final prevSlug = chapterNotifier.getPreviousChapterSlug(
-      detail!,
-      widget.slug,
-    );
-    final nextSlug = chapterNotifier.getNextChapterSlug(detail, widget.slug);
+    final prevSlug = chapterNotifier.getPreviousChapterSlug(widget.slug);
+    final nextSlug = chapterNotifier.getNextChapterSlug(widget.slug);
     final pages = chapterState.chapter.images?.length ?? 0;
 
     return GestureDetector(

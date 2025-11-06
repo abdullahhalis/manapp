@@ -26,13 +26,13 @@ class DetailProvider extends StateNotifier<DetailState> {
     try {
       final detailManga = await _mangaRepository.fetchDetailManga(slug);
       final isFavorite = _mangaRepository.isFavorite(slug);
+      ref.read(detailMangaProvider.notifier).state = detailManga;
       state = state.copyWith(
         isLoading: false,
         detailManga: detailManga,
         chapters: detailManga.chapters,
         isFavorite: isFavorite,
       );
-      ref.read(detailMangaProvider.notifier).state = detailManga;
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }

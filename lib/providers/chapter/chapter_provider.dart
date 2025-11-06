@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:manapp/models/detail_manga_model.dart';
 import 'package:manapp/providers/chapter/chapter_state.dart';
+import 'package:manapp/providers/detail/detail_provider.dart';
 import 'package:manapp/providers/repository_provider.dart';
 import 'package:manapp/repository/manga_repository.dart';
 
@@ -10,26 +11,41 @@ final chapterProvider =
       slug,
     ) {
       final mangaRepository = ref.watch(mangaRepositoryProvider);
-      return ChapterProvider(mangaRepository)..fetchChapterManga(slug);
+      final detailManga = ref.watch(detailMangaProvider);
+      return ChapterProvider(mangaRepository, detailManga)
+        ..fetchChapterManga(slug);
     });
 
 class ChapterProvider extends StateNotifier<ChapterState> {
   final MangaRepository _mangaRepository;
+  final DetailMangaModel? _detailMangaModel;
 
-  ChapterProvider(this._mangaRepository) : super(const ChapterState());
+  ChapterProvider(this._mangaRepository, this._detailMangaModel)
+    : super(const ChapterState());
 
-  Future<void> fetchChapterManga(String slug) async {
+  Future<void> fetchChapterManga(String chapterSlug) async {
     state = state.copyWith(isLoading: true);
     try {
-      final chapter = await _mangaRepository.fetchChapterManga(slug);
+      final mangaSlug = _detailMangaModel?.slug;
+      if (mangaSlug == null) {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: 'Failed to Load Data',
+        );
+        return;
+      }
+      final chapter = await _mangaRepository.fetchChapterManga(
+        mangaSlug,
+        chapterSlug,
+      );
       state = state.copyWith(isLoading: false, chapter: chapter);
     } catch (e) {
       state = state.copyWith(isLoading: false, errorMessage: e.toString());
     }
   }
 
-  String? getPreviousChapterSlug(DetailMangaModel detail, String currentSlug) {
-    final chapters = detail.chapters;
+  String? getPreviousChapterSlug(String currentSlug) {
+    final chapters = _detailMangaModel?.chapters;
     if (chapters == null || chapters.isEmpty) return null;
     final orderedChapters = chapters.reversed.toList();
     final currentIndex = orderedChapters.indexWhere(
@@ -41,8 +57,8 @@ class ChapterProvider extends StateNotifier<ChapterState> {
     return null;
   }
 
-  String? getNextChapterSlug(DetailMangaModel detail, String currentSlug) {
-    final chapters = detail.chapters;
+  String? getNextChapterSlug(String currentSlug) {
+    final chapters = _detailMangaModel?.chapters;
     if (chapters == null || chapters.isEmpty) return null;
     final orderedChapters = chapters.reversed.toList();
     final currentIndex = orderedChapters.indexWhere(

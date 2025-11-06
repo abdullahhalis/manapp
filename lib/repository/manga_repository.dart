@@ -20,8 +20,8 @@ class MangaRepository {
     return await _apiService.fetchDetailManga(slug);
   }
 
-  Future<ChapterModel> fetchChapterManga(String slug) async {
-    return await _apiService.fetchChapterManga(slug);
+  Future<ChapterModel> fetchChapterManga(String mangaSlug, String chapterSlug) async {
+    return await _apiService.fetchChapterManga(mangaSlug, chapterSlug);
   }
 
   Future<SearchResponseModel> fetchSearchManga(String query, {int page = 1}) async {

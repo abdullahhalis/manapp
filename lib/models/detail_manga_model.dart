@@ -1,4 +1,5 @@
 class DetailMangaModel {
+  final String? slug;
   final String? title;
   final String? altTitle;
   final String? image;
@@ -14,6 +15,7 @@ class DetailMangaModel {
   final List<Chapters>? chapters;
 
   const DetailMangaModel({
+    this.slug,
     this.title,
     this.altTitle,
     this.image,
@@ -31,6 +33,7 @@ class DetailMangaModel {
 
   factory DetailMangaModel.fromJson(Map<String, dynamic> json) {
     return DetailMangaModel(
+      slug: json['slug'],
       title: json['title'],
       altTitle: json['alt_title'],
       image: json['image'],
@@ -52,6 +55,7 @@ class DetailMangaModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'slug': slug,
       'title': title,
       'alt_title': altTitle,
       'image': image,
@@ -73,18 +77,20 @@ class Chapters {
   final String? chapter;
   final String? slug;
   final String? date;
+  final String? relativeDate;
 
-  const Chapters({this.chapter, this.slug, this.date});
+  const Chapters({this.chapter, this.slug, this.date, this.relativeDate});
 
   factory Chapters.fromJson(Map<String, dynamic> json) {
     return Chapters(
       chapter: json['chapter'],
       slug: json['slug'],
       date: json['date'],
+      relativeDate: json['relativeDate']
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {'chapter': chapter, 'slug': slug, 'date': date};
+    return {'chapter': chapter, 'slug': slug, 'date': date, 'relativeDate': relativeDate};
   }
 }

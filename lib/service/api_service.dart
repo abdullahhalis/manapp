@@ -30,8 +30,8 @@ class ApiService {
     }
   }
 
-  Future<ChapterModel> fetchChapterManga(String slug) async {
-    final url = Uri.parse('${ApiConstants.chapterPath}/$slug');
+  Future<ChapterModel> fetchChapterManga(String mangaSlug, String chapterSlug) async {
+    final url = Uri.parse('${ApiConstants.detailPath}/$mangaSlug/$chapterSlug');
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonBody = jsonDecode(response.body);

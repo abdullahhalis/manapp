@@ -63,7 +63,7 @@ class MangaItem extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(2),
                         child: Image.asset(
-                          'assets/images/$type.png',
+                          'assets/images/${type!.toLowerCase()}.png',
                           fit: BoxFit.cover,
                           width: 30,
                           height: 20,

@@ -203,7 +203,7 @@ class _DetailContent extends ConsumerWidget {
                 child: ListTile(
                   key: ValueKey(chapter.slug),
                   title: Text('chapter ${chapter.chapter}'),
-                  subtitle: Text(chapter.date ?? '-'),
+                  subtitle: Text(chapter.relativeDate ?? '-'),
                   tileColor:
                       detailNotifier.isChapterInHistory(chapter.slug ?? '')
                           ? Colors.grey.shade400
